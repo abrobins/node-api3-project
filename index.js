@@ -1,9 +1,9 @@
 // code away!
 const express = require("express");
 const cors = require("cors");
-// const logger = require("./middleware/logger");
+const logger = require("./middleware/logger");
 
-const postsRouter = require("./posts/postRouter");
+const postRouter = require("./posts/postRouter");
 const userRouter = require("./users/userRouter");
 
 const server = express();
@@ -12,9 +12,9 @@ const port = 4008;
 server.use(express.json());
 server.use(cors());
 
-// server.use(logger({ options: "long" }));
+server.use(logger({ options: "long" }));
 
-// server.use("/posts", postRouter);
+server.use("/posts", postRouter);
 server.use("/users", userRouter);
 
 server.use((err, req, res, next) => {

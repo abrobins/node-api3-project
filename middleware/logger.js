@@ -1,18 +1,19 @@
 module.exports = format => {
   return (req, res, next) => {
-    switch (
-      options.format // this is just an example showing how you could pass an object here - also could just do a single parameter
-    ) {
-      case "short":
-        console.log(`${req.method} ${req.url}`);
-        break;
-      case "long":
-      default:
-        console.log(
-          `${new Date().toISOString()} ${req.ip} ${req.method} ${req.url} `
-        );
-        break;
+    const { ip, method, url } = req;
+    const agent = req.get("User-Agent");
+
+    // we can use parameters defined by our HOF to
+    // change the functionality of our middleware
+    if (format === "short") {
+      console.log(`${method} ${url}`);
+    } else {
+      console.log(`${ip} ${method} ${url} ${agent}`);
     }
-    next();
+
+    next(); // this middleware is done, move on to the next piece
+
+    // ** you could also call other middleware instead of next
+    // someOtherMiddleware()(req, res, next)
   };
 };

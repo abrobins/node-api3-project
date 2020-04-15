@@ -5,7 +5,7 @@ const router = express.Router();
 const users = require("./userDb");
 const posts = require("../posts/postDb");
 
-router.post("/", validateUser(), (req, res) => {
+router.post("/", validateUser(), (req, res, next) => {
   // do your magic!
   users
     .insert(req.body)
@@ -17,21 +17,26 @@ router.post("/", validateUser(), (req, res) => {
     });
 });
 
-router.post("/:id/posts", validateUserId(), validatePost(), (req, res) => {
-  // do your magic!
-  const { text } = req.body;
-  const { id: user_id } = req.params;
-  posts
-    .insert({ text, user_id })
-    .then(user => {
-      res.status(200).json(user);
-    })
-    .catch(error => {
-      next(error);
-    });
-});
+router.post(
+  "/:id/posts",
+  validateUserId(),
+  validatePost(),
+  (req, res, next) => {
+    // do your magic!
+    const { text } = req.body;
+    const { id: user_id } = req.params;
+    posts
+      .insert({ text, user_id })
+      .then(user => {
+        res.status(200).json(user);
+      })
+      .catch(error => {
+        next(error);
+      });
+  }
+);
 
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
   // do your magic!
   console.log("req.query", req.query);
   users
@@ -49,7 +54,7 @@ router.get("/:id", validateUserId(), (req, res) => {
   res.status(200).json(req.user);
 });
 
-router.get("/:id/posts", validateUserId(), (req, res) => {
+router.get("/:id/posts", validateUserId(), (req, res, next) => {
   // do your magic!
   users
     .getUserPosts(req.params.id)
@@ -61,7 +66,7 @@ router.get("/:id/posts", validateUserId(), (req, res) => {
     });
 });
 
-router.delete("/:id", validateUserId(), (req, res) => {
+router.delete("/:id", validateUserId(), (req, res, next) => {
   // do your magic!
   users
     .remove(req.params.id)
@@ -72,8 +77,15 @@ router.delete("/:id", validateUserId(), (req, res) => {
       next(error);
     });
 });
-router.put("/:id", (req, res) => {
-  // do your magic!
+router.put("/:id", validateUser(), validateUserId(), (req, res, next) => {
+  users
+    .update(req.params.id, req.body)
+    .then(user => {
+      res.status(200).json(user);
+    })
+    .catch(error => {
+      next(error);
+    });
 });
 
 //custom middleware
